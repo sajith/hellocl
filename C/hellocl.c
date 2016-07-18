@@ -1,11 +1,13 @@
 /*
  * OpenCL hello world
  *
- * Should compile and run on Linux, but does not work as expected.
+ * Should compile and run on Linux, if OpenCL ICD loader, the actual
+ * client driver, etc are correctly installed.
  */
 
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
 #include <CL/opencl.h>
 
 #include "query.h"
@@ -19,26 +21,45 @@ const char *addVecSrc[] = {
         "}"
 };
 
-#define VECSZ 10
-
 int g_verbose_flag = 0;
 
 int main(int argc, char **argv)
 {
         int ch;
-        while ((ch = getopt (argc, argv, "v")) != -1) {
+        int vecsize = 10;
+        while ((ch = getopt (argc, argv, "vs:")) != -1) {
                 switch (ch) {
                 case 'v':
                         g_verbose_flag = 1;
                         break;
+                case 's':
+                        vecsize = strtol(optarg, NULL, 10);
+                        if (vecsize < 1) {
+                                fprintf(stderr, "%d is the wrong size", vecsize);
+                                exit(1);
+                        }
+                        break;
+             break;
+
                 default:
                         abort ();
                 }
         }
         
-        int a[VECSZ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        int b[VECSZ] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-        int c[VECSZ] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        int *a = malloc(vecsize * sizeof(int));
+        int *b = malloc(vecsize * sizeof(int));
+        int *c = malloc(vecsize * sizeof(int));
+
+        if (a == NULL || b == NULL || c == NULL) {
+                perror("malloc");
+                exit(1);
+        }
+
+        /* make up a bunch of numbers. */
+        for (int i = 0; i < vecsize; i++) {
+                a[i] = rand() % (RAND_MAX / 2);
+                b[i] = rand() % (RAND_MAX / 2);
+        }
 
         cl_platform_id clPlatform;
         if (clGetPlatformIDs(1, &clPlatform, NULL) != CL_SUCCESS) {
@@ -64,13 +85,13 @@ int main(int argc, char **argv)
         /* cl_queue_properties prop[] = { CL_QUEUE_PROPERTIES, 0, 0 }; */
         /* cl_command_queue clCommandQueue = clCreateCommandQueueWithProperties(clContext, clDevice, prop, 0); */
         
-        cl_mem clVec1 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * VECSZ, a, &err);
+        cl_mem clVec1 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, a, &err);
         errorCheck("clCreateBuffer", err);
         
-        cl_mem clVec2 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * VECSZ, b, &err);
+        cl_mem clVec2 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, b, &err);
         errorCheck("clCreateBuffer", err);
         
-        cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * VECSZ, NULL, &err);
+        cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * vecsize, NULL, &err);
         errorCheck("clCreateBuffer", err);
 
         cl_program clProgram = clCreateProgramWithSource(clContext, 5, addVecSrc, NULL, &err);
@@ -85,10 +106,10 @@ int main(int argc, char **argv)
         clSetKernelArg(clKernel, 1, sizeof(cl_mem), (void *) &clVec2);
         clSetKernelArg(clKernel, 2, sizeof(cl_mem), (void *) &clOutVec);
 
-        const size_t vecSize = { VECSZ };
+        const size_t vecSize = { vecsize };
         
         clEnqueueNDRangeKernel(clCommandQueue, clKernel, 1, NULL, &vecSize, NULL, 0, NULL, NULL);
-        clEnqueueReadBuffer(clCommandQueue, clOutVec, CL_TRUE, 0, sizeof(int) * VECSZ, c, 0, NULL, NULL);
+        clEnqueueReadBuffer(clCommandQueue, clOutVec, CL_TRUE, 0, sizeof(int) * vecsize, c, 0, NULL, NULL);
 
         clReleaseKernel(clKernel);
         clReleaseProgram(clProgram);
@@ -97,27 +118,16 @@ int main(int argc, char **argv)
         clReleaseMemObject(clVec1);
         clReleaseMemObject(clVec2);
         clReleaseMemObject(clOutVec);
-        
-        for (int i = 0; i < VECSZ; i++) {
-                printf ("%3d ", a[i]);
+
+        /* Check results. */
+        for (int i = 0; i < vecsize; i++) {
+                if (a[i] + b[i] != c[i]) {
+                        fprintf(stderr, "Result appears to be wrong.\n");
+                        exit (1);
+                }
         }
 
-        printf(" +\n");
-        
-        for (int i = 0; i < VECSZ; i++) {
-                printf ("%3d ", b[i]);
-        }
-
-        putchar('\n');
-        for (int i = 0; i < VECSZ; i++) {
-                putchar('-'); putchar('-'); putchar('-'); putchar('-');
-        }
-        putchar('\n');
-        
-        for (int i = 0; i < VECSZ; i++) {
-                printf ("%3d ", c[i]);
-        }
-        putchar('\n');
+        printf("All good!\n");
         
         return 0;
 }
