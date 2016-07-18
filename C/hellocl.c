@@ -73,7 +73,7 @@ int main(int argc, char **argv)
         cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * VECSZ, NULL, &err);
         errorCheck("clCreateBuffer", err);
 
-        cl_program clProgram = clCreateProgramWithSource(clContext, 7, addVecSrc, NULL, &err);
+        cl_program clProgram = clCreateProgramWithSource(clContext, 5, addVecSrc, NULL, &err);
         errorCheck("clCreateProgramWithSource", err);
         
         clBuildProgram(clProgram, 0, NULL, NULL, NULL, NULL);
