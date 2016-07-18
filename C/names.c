@@ -4,7 +4,7 @@
 
 void errorCheck(const char *name, cl_int err)
 {
-        derror("From %s: %s", name, clErrorString(err));
+        derror("%s returned: %s\n", name, clErrorString(err));
 }
 
 const char *clErrorString(cl_int err)
