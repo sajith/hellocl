@@ -38,24 +38,35 @@ int main(int argc, char **argv)
         }
 
         /* queryDevice(&clDevice); */
+        cl_int err;
 
-        cl_context clContext = clCreateContextFromType(0, CL_DEVICE_TYPE_GPU, NULL, NULL, NULL);
+        cl_context clContext = clCreateContextFromType(0, CL_DEVICE_TYPE_GPU, NULL, NULL, &err);
+        errorCheck("clCreateContextFromType", err);
 
         /* TODO: deprecated; use clCreateCommandQueueWithProperties */
-        cl_command_queue clCommandQueue = clCreateCommandQueue(clContext, clDevice, 0, NULL);
+        cl_command_queue clCommandQueue = clCreateCommandQueue(clContext, clDevice, 0, &err);
+        errorCheck("clCreateCommandQueue", err);
 
         /* TODO: Why does this program segfault at `clCreateCommandQueueWithProperties`? */
         /* cl_queue_properties prop[] = { CL_QUEUE_PROPERTIES, 0, 0 }; */
         /* cl_command_queue clCommandQueue = clCreateCommandQueueWithProperties(clContext, clDevice, prop, 0); */
         
-        cl_mem clVec1   = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * VECSZ, a, NULL);
-        cl_mem clVec2   = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * VECSZ, b, NULL);
-        cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * VECSZ, NULL, NULL);
+        cl_mem clVec1 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * VECSZ, a, &err);
+        errorCheck("clCreateBuffer", err);
+        
+        cl_mem clVec2 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * VECSZ, b, &err);
+        errorCheck("clCreateBuffer", err);
+        
+        cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * VECSZ, NULL, &err);
+        errorCheck("clCreateBuffer", err);
 
-        cl_program clProgram = clCreateProgramWithSource(clContext, 7, addVec, NULL, NULL);
+        cl_program clProgram = clCreateProgramWithSource(clContext, 7, addVec, NULL, &err);
+        errorCheck("clCreateProgramWithSource", err);
+        
         clBuildProgram(clProgram, 0, NULL, NULL, NULL, NULL);
 
-        cl_kernel clKernel = clCreateKernel(clProgram, "addVec", NULL);
+        cl_kernel clKernel = clCreateKernel(clProgram, "addVec", &err);
+        errorCheck("clCreateKernel", err);
 
         clSetKernelArg(clKernel, 0, sizeof(cl_mem), (void *) &clVec1);
         clSetKernelArg(clKernel, 1, sizeof(cl_mem), (void *) &clVec2);
