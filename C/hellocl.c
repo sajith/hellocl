@@ -1,8 +1,8 @@
 /*
  * OpenCL hello world
  *
- * Should compile and run on Linux, if OpenCL ICD loader, the actual
- * client driver, etc are correctly installed.
+ * Should compile and run on Linux: assuming that OpenCL ICD loader,
+ * the actual client driver, etc are correctly installed.
  */
 
 #include <stdio.h>
