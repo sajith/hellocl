@@ -11,7 +11,7 @@
 #include "query.h"
 #include "print.h"
 
-const char *addVec[] = {
+const char *addVecSrc[] = {
         "__kernel void addVec(__global int *a, __global int *b, __global int *c)",
         "{",
         "        unsigned int n = get_global_id(0);",
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
         cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * VECSZ, NULL, &err);
         errorCheck("clCreateBuffer", err);
 
-        cl_program clProgram = clCreateProgramWithSource(clContext, 7, addVec, NULL, &err);
+        cl_program clProgram = clCreateProgramWithSource(clContext, 7, addVecSrc, NULL, &err);
         errorCheck("clCreateProgramWithSource", err);
         
         clBuildProgram(clProgram, 0, NULL, NULL, NULL, NULL);
