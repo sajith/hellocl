@@ -24,7 +24,18 @@ const char *addVec[] = {
 int g_verbose_flag = 0;
 
 int main(int argc, char **argv)
-{        
+{
+        int ch;
+        while ((ch = getopt (argc, argv, "v")) != -1) {
+                switch (ch) {
+                case 'v':
+                        g_verbose_flag = 1;
+                        break;
+                default:
+                        abort ();
+                }
+        }
+        
         int a[VECSZ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         int b[VECSZ] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
         int c[VECSZ] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
