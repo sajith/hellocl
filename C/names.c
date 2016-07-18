@@ -1,7 +1,13 @@
 
+#include "print.h"
 #include "names.h"
 
-const char *clErrorString(int err)
+void errorCheck(const char *name, cl_int err)
+{
+        derror("From %s: %s", name, clErrorString(err));
+}
+
+const char *clErrorString(cl_int err)
 {
         switch (err) {
         case CL_SUCCESS: return "CL_SUCCESS";
