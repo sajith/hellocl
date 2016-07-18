@@ -4,7 +4,17 @@
 
 void errorCheck(const char *name, cl_int err)
 {
-        derror("%s returned %s\n", name, clErrorString(err));
+        extern int g_verbose_flag;
+
+        if (g_verbose_flag == 1) {
+                derror("%s returned %s\n", name, clErrorString(err));
+                return;
+        }
+
+        if (err != CL_SUCCESS) {
+                derror("%s returned %s\n", name, clErrorString(err));
+                return;
+        }
 }
 
 const char *clErrorString(cl_int err)

@@ -21,6 +21,8 @@ const char *addVec[] = {
 
 #define VECSZ 10
 
+int g_verbose_flag = 0;
+
 int main(int argc, char **argv)
 {        
         int a[VECSZ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
