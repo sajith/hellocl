@@ -1,5 +1,7 @@
 /*
  * OpenCL hello world
+ *
+ * Should compile and run on Linux, but does not work as expected.
  */
 
 #include <stdio.h>
