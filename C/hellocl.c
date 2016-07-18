@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
+#include <time.h>
 #include <CL/opencl.h>
 
 #include "query.h"
@@ -72,6 +73,9 @@ int main(int argc, char **argv)
         }
 
         /* queryDevice(&clDevice); */
+
+        clock_t startTime = clock();
+        
         cl_int err;
 
         cl_context clContext = clCreateContextFromType(0, CL_DEVICE_TYPE_GPU, NULL, NULL, &err);
@@ -119,6 +123,14 @@ int main(int argc, char **argv)
         clReleaseMemObject(clVec2);
         clReleaseMemObject(clOutVec);
 
+        clock_t endTime = clock();
+
+        /* TODO: The time calculated this way doesn't appear to be
+         * correct.  Go back to old notes!
+         */
+        double cpuTime = (endTime - startTime) / CLOCKS_PER_SEC;
+        printf("Added %d numbers in %f\n", vecsize * 2, cpuTime);
+        
         /* Check results. */
         for (int i = 0; i < vecsize; i++) {
                 if (a[i] + b[i] != c[i]) {
