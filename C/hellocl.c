@@ -39,7 +39,8 @@ int main(int argc, char **argv)
                 case 's':
                         vecsize = strtol(optarg, NULL, 10);
                         if (vecsize < 1) {
-                                fprintf(stderr, "%d is the wrong size", vecsize);
+                                fprintf(stderr, "%d is the wrong size",
+                                        vecsize);
                                 exit(1);
                         }
                         break;
@@ -71,7 +72,9 @@ int main(int argc, char **argv)
         }
 
         cl_device_id clDevice;
-        if (clGetDeviceIDs(clPlatform, CL_DEVICE_TYPE_GPU, 1, &clDevice, NULL) != CL_SUCCESS) {
+        if (clGetDeviceIDs(clPlatform,
+                           CL_DEVICE_TYPE_GPU,
+                           1, &clDevice, NULL) != CL_SUCCESS) {
                 dexit("clGetDeviceIDs");
         }
 
@@ -81,32 +84,68 @@ int main(int argc, char **argv)
         
         cl_int err;
 
-        cl_context clContext = clCreateContextFromType(0, CL_DEVICE_TYPE_GPU, NULL, NULL, &err);
+        cl_context clContext =
+                clCreateContextFromType(0,
+                                        CL_DEVICE_TYPE_GPU,
+                                        NULL,
+                                        NULL,
+                                        &err);
         errorCheck("clCreateContextFromType", err);
 
         /* TODO: deprecated; use clCreateCommandQueueWithProperties */
-        cl_command_queue clCommandQueue = clCreateCommandQueue(clContext, clDevice, 0, &err);
+        cl_command_queue clCommandQueue =
+                clCreateCommandQueue(clContext,
+                                     clDevice,
+                                     0,
+                                     &err);
         errorCheck("clCreateCommandQueue", err);
 
-        /* TODO: Why does this program segfault at `clCreateCommandQueueWithProperties`? */
-        /* cl_queue_properties prop[] = { CL_QUEUE_PROPERTIES, 0, 0 }; */
-        /* cl_command_queue clCommandQueue = clCreateCommandQueueWithProperties(clContext, clDevice, prop, 0); */
+#if 0        
+        /* TODO: Why does this program segfault at
+         * `clCreateCommandQueueWithProperties`? */
+        cl_queue_properties prop[] = { CL_QUEUE_PROPERTIES, 0, 0 };
+        cl_command_queue clCommandQueue =
+                clCreateCommandQueueWithProperties(clContext,
+                                                   clDevice,
+                                                   prop,
+                                                   0);
+#endif
         
-        cl_mem clVec1 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, aVec, &err);
+        cl_mem clVec1 =
+                clCreateBuffer(clContext,
+                               CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                               sizeof(int) * vecsize,
+                               aVec,
+                               &err);
         errorCheck("clCreateBuffer", err);
         
-        cl_mem clVec2 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, bVec, &err);
+        cl_mem clVec2 =
+                clCreateBuffer(clContext,
+                               CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                               sizeof(int) * vecsize,
+                               bVec,
+                               &err);
         errorCheck("clCreateBuffer", err);
         
-        cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * vecsize, NULL, &err);
+        cl_mem clOutVec = clCreateBuffer(clContext,
+                                         CL_MEM_WRITE_ONLY,
+                                         sizeof(int) * vecsize,
+                                         NULL,
+                                         &err);
         errorCheck("clCreateBuffer", err);
 
-        cl_program clProgram = clCreateProgramWithSource(clContext, 7, addVecSrc, NULL, &err);
+        cl_program clProgram = clCreateProgramWithSource(clContext,
+                                                         7,
+                                                         addVecSrc,
+                                                         NULL,
+                                                         &err);
         errorCheck("clCreateProgramWithSource", err);
         
         clBuildProgram(clProgram, 0, NULL, NULL, NULL, NULL);
 
-        cl_kernel clKernel = clCreateKernel(clProgram, "addVec", &err);
+        cl_kernel clKernel = clCreateKernel(clProgram,
+                                            "addVec",
+                                            &err);
         errorCheck("clCreateKernel", err);
 
         clSetKernelArg(clKernel, 0, sizeof(cl_mem), (void *) &clVec1);
@@ -115,8 +154,25 @@ int main(int argc, char **argv)
 
         const size_t vecSize = { vecsize };
         
-        clEnqueueNDRangeKernel(clCommandQueue, clKernel, 1, NULL, &vecSize, NULL, 0, NULL, NULL);
-        clEnqueueReadBuffer(clCommandQueue, clOutVec, CL_TRUE, 0, sizeof(int) * vecsize, resVec, 0, NULL, NULL);
+        clEnqueueNDRangeKernel(clCommandQueue,
+                               clKernel,
+                               1,
+                               NULL,
+                               &vecSize,
+                               NULL,
+                               0,
+                               NULL,
+                               NULL);
+        
+        clEnqueueReadBuffer(clCommandQueue,
+                            clOutVec,
+                            CL_TRUE,
+                            0,
+                            sizeof(int) * vecsize,
+                            resVec,
+                            0,
+                            NULL,
+                            NULL);
 
         clReleaseKernel(clKernel);
         clReleaseProgram(clProgram);
