@@ -141,6 +141,10 @@ int main(int argc, char **argv)
         }
 
         printf("All good!\n");
+
+        free(aVec);
+        free(bVec);
+        free(resVec);
         
         return 0;
 }
