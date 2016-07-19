@@ -6,7 +6,7 @@ void errorCheck(const char *name, cl_int err)
 {
         extern int g_verbose_flag;
 
-        if (g_verbose_flag == 1) {
+        if (g_verbose_flag != 0) {
                 derror("%s returned %s\n", name, clErrorString(err));
                 return;
         }
