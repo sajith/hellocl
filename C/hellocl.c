@@ -30,17 +30,18 @@ int g_verbose_flag = 0;
 int main(int argc, char **argv)
 {
         int ch;
-        int vecsize = 10;
+        int vecSize = 10;
+        
         while ((ch = getopt (argc, argv, "vs:")) != -1) {
                 switch (ch) {
                 case 'v':
                         g_verbose_flag = 1;
                         break;
                 case 's':
-                        vecsize = strtol(optarg, NULL, 10);
-                        if (vecsize < 1) {
+                        vecSize = strtol(optarg, NULL, 10);
+                        if (vecSize < 1) {
                                 fprintf(stderr, "%d is the wrong size",
-                                        vecsize);
+                                        vecSize);
                                 exit(1);
                         }
                         break;
@@ -51,9 +52,9 @@ int main(int argc, char **argv)
                 }
         }
         
-        int *aVec   = malloc(vecsize * sizeof(int));
-        int *bVec   = malloc(vecsize * sizeof(int));
-        int *resVec = malloc(vecsize * sizeof(int));
+        int *aVec   = malloc(vecSize * sizeof(int));
+        int *bVec   = malloc(vecSize * sizeof(int));
+        int *resVec = malloc(vecSize * sizeof(int));
 
         if (aVec == NULL || bVec == NULL || resVec == NULL) {
                 perror("malloc");
@@ -61,7 +62,7 @@ int main(int argc, char **argv)
         }
 
         /* make up a bunch of numbers. */
-        for (int i = 0; i < vecsize; i++) {
+        for (int i = 0; i < vecSize; i++) {
                 aVec[i] = rand() % (RAND_MAX / 2);
                 bVec[i] = rand() % (RAND_MAX / 2);
         }
@@ -114,7 +115,7 @@ int main(int argc, char **argv)
         cl_mem clVec1 =
                 clCreateBuffer(clContext,
                                CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                               sizeof(int) * vecsize,
+                               sizeof(int) * vecSize,
                                aVec,
                                &err);
         errorCheck("clCreateBuffer", err);
@@ -122,14 +123,14 @@ int main(int argc, char **argv)
         cl_mem clVec2 =
                 clCreateBuffer(clContext,
                                CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                               sizeof(int) * vecsize,
+                               sizeof(int) * vecSize,
                                bVec,
                                &err);
         errorCheck("clCreateBuffer", err);
         
         cl_mem clOutVec = clCreateBuffer(clContext,
                                          CL_MEM_WRITE_ONLY,
-                                         sizeof(int) * vecsize,
+                                         sizeof(int) * vecSize,
                                          NULL,
                                          &err);
         errorCheck("clCreateBuffer", err);
@@ -152,13 +153,13 @@ int main(int argc, char **argv)
         clSetKernelArg(clKernel, 1, sizeof(cl_mem), (void *) &clVec2);
         clSetKernelArg(clKernel, 2, sizeof(cl_mem), (void *) &clOutVec);
 
-        const size_t vecSize = { vecsize };
+        const size_t vecSz = { vecSize };
         
         clEnqueueNDRangeKernel(clCommandQueue,
                                clKernel,
                                1,
                                NULL,
-                               &vecSize,
+                               &vecSz,
                                NULL,
                                0,
                                NULL,
@@ -168,7 +169,7 @@ int main(int argc, char **argv)
                             clOutVec,
                             CL_TRUE,
                             0,
-                            sizeof(int) * vecsize,
+                            sizeof(int) * vecSize,
                             resVec,
                             0,
                             NULL,
@@ -188,10 +189,10 @@ int main(int argc, char **argv)
          * correct.  Go back to old notes!
          */
         double cpuTime = (endTime - startTime) / CLOCKS_PER_SEC;
-        printf("Added %d numbers in %f\n", vecsize * 2, cpuTime);
+        printf("Added %d numbers in %f\n", vecSize * 2, cpuTime);
         
         /* Check results. */
-        for (int i = 0; i < vecsize; i++) {
+        for (int i = 0; i < vecSize; i++) {
                 if (aVec[i] + bVec[i] != resVec[i]) {
                         fprintf(stderr, "Result appears to be wrong.\n");
                         exit (1);
