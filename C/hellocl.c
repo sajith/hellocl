@@ -26,7 +26,7 @@ const char *addVecSrc[] = {
         "}"
 };
 
-/* 
+/*
  * Trace results of OpenCL calls by setting `g_verbose_flag` to
  * nonzero value; this is poor man's version of apitrace
  * (https://apitrace.github.io/)
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 {
         int ch;
         int vecSize = 10;
-        
+
         while ((ch = getopt (argc, argv, "vs:")) != -1) {
                 switch (ch) {
                 case 'v':
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
                         abort ();
                 }
         }
-        
+
         int *aVec   = malloc(vecSize * sizeof(int));
         int *bVec   = malloc(vecSize * sizeof(int));
         int *resVec = malloc(vecSize * sizeof(int));
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
         /* queryDevice(&clDevice); */
 
         clock_t startTime = clock();
-        
+
         cl_int err;
 
         cl_context clContext =
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
                                      &err);
         errorCheck("clCreateCommandQueue", err);
 
-#if 0        
+#if 0
         /* TODO: Why does this program segfault at
          * `clCreateCommandQueueWithProperties`? */
         cl_queue_properties prop[] = { CL_QUEUE_PROPERTIES, 0, 0 };
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
                                                    prop,
                                                    0);
 #endif
-        
+
         cl_mem clVec1 =
                 clCreateBuffer(clContext,
                                CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
                                aVec,
                                &err);
         errorCheck("clCreateBuffer", err);
-        
+
         cl_mem clVec2 =
                 clCreateBuffer(clContext,
                                CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
                                bVec,
                                &err);
         errorCheck("clCreateBuffer", err);
-        
+
         cl_mem clOutVec = clCreateBuffer(clContext,
                                          CL_MEM_WRITE_ONLY,
                                          sizeof(int) * vecSize,
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
                                                          NULL,
                                                          &err);
         errorCheck("clCreateProgramWithSource", err);
-        
+
         clBuildProgram(clProgram, 0, NULL, NULL, NULL, NULL);
 
         cl_kernel clKernel = clCreateKernel(clProgram,
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
         clSetKernelArg(clKernel, 2, sizeof(cl_mem), (void *) &clOutVec);
 
         const size_t vecSz = { vecSize };
-        
+
         clEnqueueNDRangeKernel(clCommandQueue,
                                clKernel,
                                1,
@@ -174,7 +174,7 @@ int main(int argc, char **argv)
                                0,
                                NULL,
                                NULL);
-        
+
         clEnqueueReadBuffer(clCommandQueue,
                             clOutVec,
                             CL_TRUE,
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
          */
         double cpuTime = (endTime - startTime) / CLOCKS_PER_SEC;
         printf("Added %d numbers in %f\n", vecSize * 2, cpuTime);
-        
+
         /* Check results. */
         for (int i = 0; i < vecSize; i++) {
                 if (aVec[i] + bVec[i] != resVec[i]) {
@@ -214,6 +214,6 @@ int main(int argc, char **argv)
         free(aVec);
         free(bVec);
         free(resVec);
-        
+
         return 0;
 }
