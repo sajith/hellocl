@@ -48,19 +48,19 @@ int main(int argc, char **argv)
                 }
         }
         
-        int *a = malloc(vecsize * sizeof(int));
-        int *b = malloc(vecsize * sizeof(int));
-        int *c = malloc(vecsize * sizeof(int));
+        int *aVec   = malloc(vecsize * sizeof(int));
+        int *bVec   = malloc(vecsize * sizeof(int));
+        int *resVec = malloc(vecsize * sizeof(int));
 
-        if (a == NULL || b == NULL || c == NULL) {
+        if (aVec == NULL || bVec == NULL || resVec == NULL) {
                 perror("malloc");
                 exit(1);
         }
 
         /* make up a bunch of numbers. */
         for (int i = 0; i < vecsize; i++) {
-                a[i] = rand() % (RAND_MAX / 2);
-                b[i] = rand() % (RAND_MAX / 2);
+                aVec[i] = rand() % (RAND_MAX / 2);
+                bVec[i] = rand() % (RAND_MAX / 2);
         }
 
         cl_platform_id clPlatform;
@@ -90,10 +90,10 @@ int main(int argc, char **argv)
         /* cl_queue_properties prop[] = { CL_QUEUE_PROPERTIES, 0, 0 }; */
         /* cl_command_queue clCommandQueue = clCreateCommandQueueWithProperties(clContext, clDevice, prop, 0); */
         
-        cl_mem clVec1 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, a, &err);
+        cl_mem clVec1 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, aVec, &err);
         errorCheck("clCreateBuffer", err);
         
-        cl_mem clVec2 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, b, &err);
+        cl_mem clVec2 = clCreateBuffer(clContext, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * vecsize, bVec, &err);
         errorCheck("clCreateBuffer", err);
         
         cl_mem clOutVec = clCreateBuffer(clContext, CL_MEM_WRITE_ONLY, sizeof(int) * vecsize, NULL, &err);
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
         const size_t vecSize = { vecsize };
         
         clEnqueueNDRangeKernel(clCommandQueue, clKernel, 1, NULL, &vecSize, NULL, 0, NULL, NULL);
-        clEnqueueReadBuffer(clCommandQueue, clOutVec, CL_TRUE, 0, sizeof(int) * vecsize, c, 0, NULL, NULL);
+        clEnqueueReadBuffer(clCommandQueue, clOutVec, CL_TRUE, 0, sizeof(int) * vecsize, resVec, 0, NULL, NULL);
 
         clReleaseKernel(clKernel);
         clReleaseProgram(clProgram);
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
         
         /* Check results. */
         for (int i = 0; i < vecsize; i++) {
-                if (a[i] + b[i] != c[i]) {
+                if (aVec[i] + bVec[i] != resVec[i]) {
                         fprintf(stderr, "Result appears to be wrong.\n");
                         exit (1);
                 }
