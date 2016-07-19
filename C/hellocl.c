@@ -15,6 +15,7 @@
 #include "query.h"
 #include "print.h"
 
+/* vector addition, OpenCL edition. */
 const char *addVecSrc[] = {
         "__kernel void addVec(__global int *a, ",
         "                     __global int *b, ",
@@ -25,6 +26,11 @@ const char *addVecSrc[] = {
         "}"
 };
 
+/* 
+ * Trace results of OpenCL calls by setting `g_verbose_flag` to
+ * nonzero value; this is poor man's version of apitrace
+ * (https://apitrace.github.io/)
+ */
 int g_verbose_flag = 0;
 
 int main(int argc, char **argv)
