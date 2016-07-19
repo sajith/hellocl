@@ -93,7 +93,11 @@ int main(int argc, char **argv)
                                         &err);
         errorCheck("clCreateContextFromType", err);
 
-        /* TODO: deprecated; use clCreateCommandQueueWithProperties */
+        /* TODO: `clCreateCommandQueue` is deprecated; use
+         * `clCreateCommandQueueWithProperties` instead.  But the
+         * latter segfaults on Mesa/Intel beignet 1.1.2; what's up
+         * with that?
+         */
         cl_command_queue clCommandQueue =
                 clCreateCommandQueue(clContext,
                                      clDevice,
