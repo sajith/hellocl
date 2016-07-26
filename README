@@ -1,2 +1,33 @@
 Here be some OpenCL experiments.
-Such as: does this OpenCL thing work on my computer at all?
+Such as: does this OpenCL thing work on my computer(s) at all?
+
+Findings so far, with Beignet [1]:
+
+ - Yup, it does works on a 2014 Macbook Pro (Haswell [2]).
+ 
+ - Nope, it doesn't work on a 2011 Thinkpad T420.  Neither on the GPU
+   nor on the CPU (SandyBridge [3]).
+
+Both computers are running Debian testing.  Now, uhh, about the other
+OS that runs on Macbooks: I should try that too, one of these days.
+
+Some instructions on setting up OpenCL on GNU/Linux machines are
+available at [4] and [5].
+
+Besides Beignet, I also tried the official Intel driver from [6] on
+the Thinkpad.  It does not work, neither on the GPU nor on the CPU --
+clGetDeviceIDs() returns CL_DEVICE_NOT_FOUND.  I vaguely remember that
+stuff working on this machine back in the days, but I may be
+misremembering things.
+
+(Confusingly enough, according to the f.d.o wiki, it is Intel China
+OTC that works on Beignet.  If it is indeed so, why is there another
+"official" driver?  One of the great mysteries, it seems.)
+
+[1] https://www.freedesktop.org/wiki/Software/Beignet/
+[2] http://ark.intel.com/products/83508
+[3] http://ark.intel.com/products/52229
+[4] https://wiki.tiker.net/OpenCLHowTo
+[5] https://mhr3.blogspot.com/2013/06/opencl-on-ubuntu-1304.html
+[6] https://software.intel.com/en-us/articles/opencl-drivers
+
