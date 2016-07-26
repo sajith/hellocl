@@ -7,4 +7,4 @@ hellocl: hellocl.c query.c names.c
 	gcc $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 clean:
-	rm -f helloworld *.o
+	rm -f hellocl *.o
