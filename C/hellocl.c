@@ -73,23 +73,27 @@ int main(int argc, char **argv)
                 bVec[i] = rand() % (RAND_MAX / 2);
         }
 
+        cl_int err;
+        
         cl_platform_id clPlatform;
-        if (clGetPlatformIDs(1, &clPlatform, NULL) != CL_SUCCESS) {
-                dexit("clGetPlatformIDs");
+        err = clGetPlatformIDs(1, &clPlatform, NULL);
+        if (err != CL_SUCCESS) {
+                errorCheck("clGetPlatformIDs", err);
+                exit(1);
         }
 
         cl_device_id clDevice;
-        if (clGetDeviceIDs(clPlatform,
-                           CL_DEVICE_TYPE_GPU,
-                           1, &clDevice, NULL) != CL_SUCCESS) {
-                dexit("clGetDeviceIDs");
+        err = clGetDeviceIDs(clPlatform,
+                             CL_DEVICE_TYPE_GPU,
+                             1, &clDevice, NULL);
+        if (err != CL_SUCCESS) {
+                errorCheck("clGetDeviceIDs", err);
+                exit(1);
         }
 
         /* queryDevice(&clDevice); */
 
         clock_t startTime = clock();
-
-        cl_int err;
 
         cl_context clContext =
                 clCreateContextFromType(0,
