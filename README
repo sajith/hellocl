@@ -1,12 +1,17 @@
 Here be some OpenCL experiments.
-Such as: does this OpenCL thing work on my computer(s) at all?
+------------------------------------------------------------------------
 
-Findings so far, with Beignet [1]:
+These experiments try to answer some questions, such as:
 
- - Yup, it does works on a 2014 Macbook Pro (Haswell [2]).
+  A. Does this OpenCL thing work on my computer(s) at all?
+  B. How about Haskell and OpenCL, does such a thing work?
+
+Regarding A, findings so far, with Beignet [1]:
+
+  - Yup, it does works on a 2014 Macbook Pro (Haswell [2]).
  
- - Nope, it doesn't work on a 2011 Thinkpad T420.  Neither on the GPU
-   nor on the CPU (SandyBridge [3]).
+  - Nope, it doesn't work on a 2011 Thinkpad T420.  Neither on the GPU
+    nor on the CPU (SandyBridge [3]).
 
 Both computers are running Debian testing.  Now, uhh, about the other
 OS that runs on Macbooks: I should try that too, one of these days.
@@ -24,10 +29,26 @@ misremembering things.
 OTC that works on Beignet.  If it is indeed so, why is there another
 "official" driver?  One of the great mysteries, it seems.)
 
-[1] https://www.freedesktop.org/wiki/Software/Beignet/
-[2] http://ark.intel.com/products/83508
-[3] http://ark.intel.com/products/52229
-[4] https://wiki.tiker.net/OpenCLHowTo
-[5] https://mhr3.blogspot.com/2013/06/opencl-on-ubuntu-1304.html
-[6] https://software.intel.com/en-us/articles/opencl-drivers
+Regarding B, OpenCL with Haskell [7] indeed works on the computer with
+Haswell chip.
 
+TODO:
+------------------------------------------------------------------------
+
+  - How about hopencl [8]? how is that different from OpenCL of [7]?
+  
+  - Some benchmarks should be fun.
+  
+  - Other languages/GPU DSLs also should be fun: Rust, OCaml, C++,
+    Accelerate, Copperhead, etc.  (The last two don't support OpenCL.)
+
+------------------------------------------------------------------------
+
+  [1] https://www.freedesktop.org/wiki/Software/Beignet/
+  [2] http://ark.intel.com/products/83508
+  [3] http://ark.intel.com/products/52229
+  [4] https://wiki.tiker.net/OpenCLHowTo
+  [5] https://mhr3.blogspot.com/2013/06/opencl-on-ubuntu-1304.html
+  [6] https://software.intel.com/en-us/articles/opencl-drivers
+  [7] https://github.com/IFCA/opencl
+  [8] https://github.com/bgaster/hopencl
