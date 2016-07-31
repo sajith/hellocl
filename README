@@ -39,9 +39,8 @@ TODO:
   
   - Some benchmarks should be fun.
   
-  - Other languages/GPU DSLs also should be fun: Rust, OCaml, C++,
-    ArrayFire, boost::compute, Accelerate, Copperhead, etc.  (The last
-    two don't support OpenCL.)
+  - Other languages/DSLs that support/extend OpenCL also should be
+    fun: Rust, OCaml, C++, ArrayFire, boost::compute, etc.
 
 ------------------------------------------------------------------------
 
